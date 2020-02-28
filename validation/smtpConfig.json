@@ -1,0 +1,12 @@
+{
+    "smtpAddresses" :
+    {
+        "gmail" : "smtp.gmail.com",
+        "outlook" : "smtp-mail.outlook.com",
+        "hotmail" : "smtp.live.com",
+        "live" : "smtp.live.com",
+        "icloud" : "smtp.mail.me.com",
+        "yahoo" : "smtp.mail.yahoo.com",
+        "aol" : "smtp.aol.com"
+    }
+}
