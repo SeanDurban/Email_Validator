@@ -7,12 +7,13 @@ router.get('/validate', function(req, res) {
   res.status(501).send("Not Implemented");
 });
 
-router.post('/validate', function(req, res) {
+router.post('/validate', async function(req, res) {
   if(req.body.email == null) {
     res.status(403).send("Must provide email.");
   }
   else { 
-    res.status(200).send(emailValidator.validateEmail(req.body.email));
+    let validation = await emailValidator.validateEmail(req.body.email);
+    res.status(200).send(validation);
   }
 });
 

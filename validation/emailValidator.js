@@ -1,7 +1,9 @@
-function validateEmail(email) {
+const axios = require('axios');
+
+async function validateEmail(email) {
 
     let regexValidationRes = regexValidation(email);
-    let domainValidationRes = domainValidation(email.split('@')[1]);
+    let domainValidationRes = await domainValidation(email.split('@')[1]);
     let smtpValidationRes = smtpValidation('smtp.' + email.split('@')[1]);
 
     let valid = regexValidationRes.valid && domainValidationRes.valid && smtpValidationRes.valid;
@@ -27,8 +29,14 @@ function regexValidation(email) {
     return result;
 }
 
-function domainValidation(domain) {
-    return {valid: true, reason : "Unable to connect to domain"};
+async function domainValidation(domain) {
+    try {
+        await axios.get('http://'+ domain, {"accept" : "*/*"});
+    }
+    catch (err) {
+        return {valid : false, reason : err.code};
+    }
+    return {valid : true};
 }
 
 function smtpValidation(hostname) {
