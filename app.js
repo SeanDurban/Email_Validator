@@ -1,12 +1,12 @@
 var express = require('express');
 
-var baseRouter = require('./routes/base');
+var emailRouter = require('./routes/email');
 
 var app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/', baseRouter);
+app.use('/email', emailRouter);
 
 module.exports = app;
