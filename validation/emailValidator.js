@@ -21,6 +21,7 @@ async function validateEmail(email) {
     return resultFormat;
 }
 
+// Simple regex validation on email address
 function regexValidation(email) {
     // this is the standard HTML5 validation of email type
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -31,6 +32,7 @@ function regexValidation(email) {
     return result;
 }
 
+// Pings the domain to check it exists
 async function domainValidation(domain) {
     try {
        await axios.get('http://'+ domain);
@@ -41,6 +43,9 @@ async function domainValidation(domain) {
     }
 }
 
+// Trys to connect to the smtp using TCP sockets
+// Returns: Valid or timeout if unable to connect and notfound if doesn't exist
+// Note: Timeout can take a few seconds as uses default timeout (5 seconds)
 function smtpValidation(domain) {
     // Net library doesn't have promise support out of the box so have to implement it
     return new Promise((resolve) => {
