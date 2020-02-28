@@ -18,12 +18,17 @@ function validateEmail(email) {
 }
 
 function regexValidation(email) {
-    let resultDefault = {valid : true};
-    return resultDefault;
+    // this is the standard HTML5 validation of email type
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    let result = {};
+    result.valid =  emailRegex.test(email);
+    if(!result.valid) result.reason = "Invalid email format"
+    
+    return result;
 }
 
 function domainValidation(domain) {
-    return {valid: false, reason : "Unable to connect to domain"};
+    return {valid: true, reason : "Unable to connect to domain"};
 }
 
 function smtpValidation(hostname) {
