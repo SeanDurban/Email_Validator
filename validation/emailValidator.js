@@ -6,8 +6,14 @@ const smtpAddresses = require('./smtpConfig').smtpAddresses;
 async function validateEmail(email) {
     let domain = getDomain(email);
     let regexValidationRes = regexValidation(email);
-    let domainValidationRes = await domainValidation(domain);
-    let smtpValidationRes = await smtpValidation(domain);
+    let domainValidationCall = domainValidation(domain);
+    let smtpValidationCall = smtpValidation(domain);
+
+    // implementing async/await in this fashion allows domainValidation and smtpValidation 
+    // to be run async while still awaiting results to continue
+    let domainValidationRes = await domainValidationCall;
+    let smtpValidationRes = await smtpValidationCall;
+
     let valid = regexValidationRes.valid && domainValidationRes.valid && smtpValidationRes.valid;
 
     let resultFormat = { 
@@ -18,6 +24,10 @@ async function validateEmail(email) {
             "smtp" : smtpValidationRes
         }
     };
+
+    Promise.all([domainValidation(domain), smtpValidation(domain)]).then((res) => {
+        console.log(res);
+    });
     return resultFormat;
 }
 
