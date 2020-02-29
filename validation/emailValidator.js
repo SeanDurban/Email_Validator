@@ -45,7 +45,6 @@ async function domainValidation(domain) {
 
 // Trys to connect to the smtp using TCP sockets
 // Returns: Valid or timeout if unable to connect and notfound if doesn't exist
-// Note: Timeout can take a few seconds as uses default timeout (5 seconds)
 function smtpValidation(domain) {
     // Net library doesn't have promise support out of the box so have to implement it
     return new Promise((resolve) => {
@@ -53,15 +52,20 @@ function smtpValidation(domain) {
         let domainName = getDomainWithoutExtension(domain);
         let smtpAddress = smtpAddresses[domainName];
         if(!smtpAddress) smtpAddress = 'smtp.' + domain;
-            let connection= net.createConnection(587, smtpAddress, () => {
-                    connection.end();
-                    resolve({valid:true});
-            });
-
-            // This will catch all errors, timeout error can take a number of seconds
-            connection.on('error', (err) => {
-                resolve({valid : false, reason : err.code});
-            });
+        
+        let connection= net.createConnection(587, smtpAddress, () => {
+                connection.end();
+                resolve({valid:true});
+        });
+        //Set custom timeout as default takes 5+ seconds
+        connection.setTimeout(2500, () => {
+            connection.destroy(); 
+            resolve({valid: false, reason:"ETIMEDOUT"})
+        });
+        // This will catch all errors, timeout error can take a number of seconds
+        connection.on('error', (err) => {
+            resolve({valid : false, reason : err.code});
+        });
     });
 }
 
