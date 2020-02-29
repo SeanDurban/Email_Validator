@@ -25,9 +25,6 @@ async function validateEmail(email) {
         }
     };
 
-    Promise.all([domainValidation(domain), smtpValidation(domain)]).then((res) => {
-        console.log(res);
-    });
     return resultFormat;
 }
 
