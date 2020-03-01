@@ -46,11 +46,11 @@ function regexValidation(email) {
 // Pings the domain to check it exists
 async function domainValidation(domain) {
     try {
-       await axios.get('http://'+ domain);
+       await axios.get('http://' + domain);
        return {valid: true};
     }
     catch (err) {
-        return {valid : false, reason : err.code};
+        return {valid : false, reason : err.code ? err.code : "Invalid domain"};
     }
 }
 
@@ -75,7 +75,7 @@ function smtpValidation(domain) {
         });
         // This will catch all errors, timeout error can take a number of seconds
         connection.on('error', (err) => {
-            resolve({valid : false, reason : err.code});
+            resolve({valid : false, reason : err.code ? err.code : "Invalid smtp"});
         });
     });
 }
