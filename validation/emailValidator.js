@@ -1,11 +1,13 @@
 const axios = require('axios');
 const net = require('net');
-const dns = require('dns'); 
+const dns = require('dns');
 const smtpAddresses = require('./smtpConfig').smtpAddresses;
+const tldList = require('./icann_tld_list');
 
 async function validateEmail(email) {
     let domain = getDomain(email);
     let regexValidationRes = regexValidation(email);
+    let tldValidationRes = tldValidation(getDomainTLD(domain));
     let domainValidationCall = domainValidation(domain);
     let smtpValidationCall = smtpValidation(domain);
 
@@ -14,14 +16,16 @@ async function validateEmail(email) {
     let domainValidationRes = await domainValidationCall;
     let smtpValidationRes = await smtpValidationCall;
 
-    let valid = regexValidationRes.valid && domainValidationRes.valid && smtpValidationRes.valid;
+    let valid = regexValidationRes.valid && domainValidationRes.valid 
+        && smtpValidationRes.valid && tldValidationRes.valid;
 
     let resultFormat = { 
         "valid": valid,
         "validators": {
             "regex" : regexValidationRes,
             "domain" : domainValidationRes,
-            "smtp" : smtpValidationRes
+            "smtp" : smtpValidationRes,
+            "tld" : tldValidationRes
         }
     };
 
@@ -76,6 +80,16 @@ function smtpValidation(domain) {
     });
 }
 
+// Uses a static list of known TLD (top level domains) for validation
+// List taken from source and added as JSON file
+// Source : https://www.icann.org/resources/pages/tlds-2012-02-25-en
+function tldValidation(tld) {
+    if(tld == '' || !tldList[tld.toUpperCase()]) {
+        return {valid : false, reason : "Invalid TLD"};
+    }
+    return {valid: true};
+}
+
 // Simple splitting of string to get domain => assumes email is in standard form XYZ@domain.com
 function getDomain(email) {
     let domain = email.split('@')[1];
@@ -88,6 +102,12 @@ function getDomainWithoutExtension(domain) {
     let domainName = domain.split('.')[0];
     if(!domainName) domainName = '';
     return domainName;
+}
+
+function getDomainTLD(domain){ 
+    let tld = domain.split('.')[1];
+    if(!tld) tld = '';
+    return tld;
 }
 
 // Uses DNS to retrieve MX addresses associated with a domain
